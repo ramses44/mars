@@ -2,9 +2,12 @@ from flask import Flask, request, render_template, redirect
 from data import db_session
 from data.users import *
 from data.__all_models import RegisterForm, LoginForm
+from flask_login import LoginManager
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 
 def add_user(login, pwd, name, sname, age, pos, spec, addr, **kwargs):
@@ -21,6 +24,12 @@ def add_user(login, pwd, name, sname, age, pos, spec, addr, **kwargs):
     session = db_session.create_session()
     session.add(user)
     session.commit()
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    session = db_session.create_session()
+    return session.query(User).get(user_id)
 
 
 @app.route('/')
