@@ -1,4 +1,4 @@
-from . import users
+from . import users, jobs
 from wtforms import *
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField

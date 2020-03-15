@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, redirect
 from data import db_session
 from data.users import *
+from data.jobs import *
 from data.__all_models import RegisterForm, LoginForm
 
 app = Flask(__name__)
@@ -89,6 +90,29 @@ def success():
     return "You logged in successfully"
 
 
+def add_colonists():
+    """Требуемая в задаче ф-ия"""
+    session = db_session.create_session()
+
+    users = [
+        dict(surname='Scott', name='Ridley', age=21, position='captain',
+             speciality='research engineer', address='module_1', email='scott_chief@mars.org'),
+        dict(surname='Surname1', name='Name1', age=666, position='pos1',
+             speciality='spec1', address='addr1', email='email1'),
+        dict(surname='Surname2', name='Name2', age=2, position='pos2',
+             speciality='spec2', address='addr2', email='email2'),
+        dict(surname='Surname3', name='Name3', age=3, position='pos3',
+             speciality='spec3', address='addr3', email='email3'),
+    ]
+
+    for udata in users:
+        user = User(**udata)
+        session.add(user)
+
+    session.commit()
+
+
 if __name__ == '__main__':
     db_session.global_init("db/mars.sqlite")
-    app.run(port=8080, host='127.0.0.1')
+    add_colonists()
+    # app.run(port=8080, host='127.0.0.1')
