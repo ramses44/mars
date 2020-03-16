@@ -1,7 +1,6 @@
 from flask import Flask, request, render_template, redirect
 from data import db_session
 from data.users import *
-from data.jobs import *
 from data.__all_models import RegisterForm, LoginForm
 
 app = Flask(__name__)
@@ -28,6 +27,18 @@ def add_user(login, pwd, name, sname, age, pos, spec, addr, **kwargs):
 @app.route('/index')
 def index():
     return render_template('index.html')
+
+
+# @app.route('/register', methods=['POST', 'GET'])
+# def register():
+#     if request.method == "GET":
+#         return render_template('register.html')
+#     elif request.method == "POST":
+#         if request.form['pwd'] == request.form['pwd2'] != "":
+#             add_user(**request.form)
+#             return "Register complited"
+#         else:
+#             return "Wrong answers"
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -78,17 +89,6 @@ def success():
     return "You logged in successfully"
 
 
-def first_work():
-    """Требуемая в задаче ф-ия"""
-    ses = db_session.create_session()
-    data = dict(team_leader=1, job="deployment of residential modules 1 and 2",
-                work_size=15, collaborators="2, 3", is_finished=False)
-    work = Jobs(**data)
-    ses.add(work)
-    ses.commit()
-
-
 if __name__ == '__main__':
     db_session.global_init("db/mars.sqlite")
-    first_work()
-    # app.run(port=8080, host='127.0.0.1')
+    app.run(port=8080, host='127.0.0.1')
