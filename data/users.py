@@ -22,8 +22,7 @@ class User(SqlAlchemyBase):
                                       default=datetime.datetime.now)
 
     def __repr__(self):
-        return " ".join(map(str, (self.surname, self.name, self.age, self.position, self.speciality,
-                                  self.address, self.email, self.hashed_password)))
+        return f"<Colonist> {self.id} {self.surname} {self.name}"
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)

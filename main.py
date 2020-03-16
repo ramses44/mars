@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect
+from flask import Flask, render_template, redirect
 from data import db_session
 from data.users import *
 from data.jobs import *
@@ -88,7 +88,16 @@ def first_work():
     ses.commit()
 
 
+@app.route('/works_journal')
+def works_journal():
+    ses = db_session.create_session()
+    return render_template('works_journal.html', works=ses.query(Jobs))
+
+
 if __name__ == '__main__':
-    db_session.global_init("db/mars.sqlite")
-    first_work()
-    # app.run(port=8080, host='127.0.0.1')
+    db_session.global_init('db/mars.sqlite')
+    ses = db_session.create_session()
+
+    app.run(port=8080, host='127.0.0.1')
+
+
