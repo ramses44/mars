@@ -30,18 +30,6 @@ def index():
     return render_template('index.html')
 
 
-# @app.route('/register', methods=['POST', 'GET'])
-# def register():
-#     if request.method == "GET":
-#         return render_template('register.html')
-#     elif request.method == "POST":
-#         if request.form['pwd'] == request.form['pwd2'] != "":
-#             add_user(**request.form)
-#             return "Register complited"
-#         else:
-#             return "Wrong answers"
-
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -90,29 +78,17 @@ def success():
     return "You logged in successfully"
 
 
-def add_colonists():
+def first_work():
     """Требуемая в задаче ф-ия"""
-    session = db_session.create_session()
-
-    users = [
-        dict(surname='Scott', name='Ridley', age=21, position='captain',
-             speciality='research engineer', address='module_1', email='scott_chief@mars.org'),
-        dict(surname='Surname1', name='Name1', age=666, position='pos1',
-             speciality='spec1', address='addr1', email='email1'),
-        dict(surname='Surname2', name='Name2', age=2, position='pos2',
-             speciality='spec2', address='addr2', email='email2'),
-        dict(surname='Surname3', name='Name3', age=3, position='pos3',
-             speciality='spec3', address='addr3', email='email3'),
-    ]
-
-    for udata in users:
-        user = User(**udata)
-        session.add(user)
-
-    session.commit()
+    ses = db_session.create_session()
+    data = dict(team_leader=1, job="deployment of residential modules 1 and 2",
+                work_size=15, collaborators="2, 3", is_finished=False)
+    work = Jobs(**data)
+    ses.add(work)
+    ses.commit()
 
 
 if __name__ == '__main__':
     db_session.global_init("db/mars.sqlite")
-    add_colonists()
+    first_work()
     # app.run(port=8080, host='127.0.0.1')
