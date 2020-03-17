@@ -25,6 +25,12 @@ def add_user(login, pwd, name, sname, age, pos, spec, addr, **kwargs):
 
 
 @app.route('/')
+@app.route('/works_journal')
+def works_journal():
+    ses = db_session.create_session()
+    return render_template('works_journal.html', works=ses.query(Jobs))
+
+
 @app.route('/index')
 def index():
     return render_template('index.html')
@@ -76,29 +82,7 @@ def register():
 
 @app.route('/success')
 def success():
-    return redirect('/list_prof/ul')
-
-
-@app.route('/list_prof/<list>')
-def list_prof(list):
-    return render_template('prof_list.html', type=list, prof_lst=[
-        "инженер - исследователь",
-        "пилот",
-        "строитель",
-        "экзобиолог",
-        "врач",
-        "инженер по терраформированию климатолог",
-        "специалист по радиационной защите",
-        "астрогеолог",
-        "гляциолог",
-        "инженер жизнеобеспечения",
-        "метеоролог",
-        "оператор марсохода",
-        "киберинженер",
-        "штурман",
-        "пилот дронов"
-
-    ])
+    return redirect('/')
 
 
 @app.route('/addjob', methods=['GET', 'POST'])
@@ -119,7 +103,7 @@ def addjob():
         ses.add(job)
         ses.commit()
 
-        return redirect('/list_prof/ul')
+        return redirect('/')
 
     return render_template('adding_job.html', title='Добавление работы', form=form)
 

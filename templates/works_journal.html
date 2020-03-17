@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Журнал работ</h1>
+
+{% for work in works %}
+    <h2>Запись #{{loop.index}}</h2>
+    <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Название</th>
+        <th scope="col">Тимлид</th>
+        <th scope="col">Время работы</th>
+        <th scope="col">ID рабочих</th>
+        <th scope="col">Завершена ли</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="table-active">
+        <th scope="row">{{work.job}}</th>
+          <td>{{work.teamlead.surname}} {{work.teamlead.name}}</td>
+          <td>{{work.work_size}} hours</td>
+          <td>{{work.collaborators}}</td>
+          {% if work.is_finished %}
+            <td>Да</td>
+          {% else %}
+            <td>Нет</td>
+          {% endif %}
+      </tr>
+    </tbody>
+  </table>
+{% endfor %}
+
+{% endblock %}
