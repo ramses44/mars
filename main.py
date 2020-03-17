@@ -1,8 +1,8 @@
-from flask import Flask, render_template, redirect
+from flask import Flask, request, render_template, redirect
 from data import db_session
 from data.users import *
-from data.jobs import *
-from data.__all_models import RegisterForm, LoginForm
+from data.__all_models import *
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -41,6 +41,7 @@ def login():
                                                                     title='Log in',
                                                                     form=form,
                                                                     message="Wrong login/password")
+
     return render_template('login.html', title='Log in', form=form)
 
 
@@ -75,29 +76,54 @@ def register():
 
 @app.route('/success')
 def success():
-    return "You logged in successfully"
+    return redirect('/list_prof/ul')
 
 
-def first_work():
-    """Требуемая в задаче ф-ия"""
-    ses = db_session.create_session()
-    data = dict(team_leader=1, job="deployment of residential modules 1 and 2",
-                work_size=15, collaborators="2, 3", is_finished=False)
-    work = Jobs(**data)
-    ses.add(work)
-    ses.commit()
+@app.route('/list_prof/<list>')
+def list_prof(list):
+    return render_template('prof_list.html', type=list, prof_lst=[
+        "инженер - исследователь",
+        "пилот",
+        "строитель",
+        "экзобиолог",
+        "врач",
+        "инженер по терраформированию климатолог",
+        "специалист по радиационной защите",
+        "астрогеолог",
+        "гляциолог",
+        "инженер жизнеобеспечения",
+        "метеоролог",
+        "оператор марсохода",
+        "киберинженер",
+        "штурман",
+        "пилот дронов"
+
+    ])
 
 
-@app.route('/works_journal')
-def works_journal():
-    ses = db_session.create_session()
-    return render_template('works_journal.html', works=ses.query(Jobs))
+@app.route('/addjob', methods=['GET', 'POST'])
+def addjob():
+    form = Adding_job()
+
+    if form.validate_on_submit():
+        ses = db_session.create_session()
+        job = Jobs(
+            job=form.title.data,
+            team_leader=int(form.teamlead.data),
+            work_size=int(form.work_size.data),
+            collaborators=form.collaborators.data,
+            start_date=datetime.strptime(form.st_date.data, "%Y-%m-%dT%H:%M") if form.st_date.data else None,
+            end_date=datetime.strptime(form.end_date.data, "%Y-%m-%dT%H:%M") if form.end_date.data else None,
+            is_finished=form.is_finished.data
+        )
+        ses.add(job)
+        ses.commit()
+
+        return redirect('/list_prof/ul')
+
+    return render_template('adding_job.html', title='Добавление работы', form=form)
 
 
 if __name__ == '__main__':
-    db_session.global_init('db/mars.sqlite')
-    ses = db_session.create_session()
-
+    db_session.global_init("db/mars.sqlite")
     app.run(port=8080, host='127.0.0.1')
-
-
