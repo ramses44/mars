@@ -43,7 +43,7 @@
     </p>
     <p>
         {{ form.st_date.label }}<br>
-        {{ form.st_date(class="form-control", type="date-local") }}<br>
+        {{ form.st_date(class="form-control", type="datetime-local") }}<br>
         {% for error in form.st_date.errors %}
             <div class="alert alert-danger" role="alert">
                 {{ error }}
