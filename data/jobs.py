@@ -9,8 +9,10 @@ class Jobs(SqlAlchemyBase):
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
+    creator = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"))
+    creator_ = orm.relation("User", foreign_keys=[creator])
     team_leader = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"))
-    teamlead = orm.relation("User")
+    teamlead = orm.relation("User", foreign_keys=[team_leader])
     job = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     work_size = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     collaborators = sqlalchemy.Column(sqlalchemy.String, nullable=True)

@@ -34,5 +34,5 @@ class Adding_job(FlaskForm):
     st_date = StringField("Дата начала работы")
     end_date = StringField("Дата окончания работы")
     is_finished = BooleanField("Завершена ли работа")
-    add = SubmitField("Добавить")
+    add = SubmitField("Сохранить")
 
