@@ -1,6 +1,5 @@
 from flask import Flask, request, render_template, redirect, flash
 from data import db_session
-from data.users import *
 from data.__all_models import *
 from datetime import datetime
 from flask_login import login_user, logout_user, current_user, login_required, LoginManager
@@ -170,7 +169,7 @@ def editjob(job_id):
 @app.route('/deljob/<job_id>', methods=['GET', "POST"])
 def deljob(job_id):
     """Т.к. условия задач сформулированы не совсем понятно,
-    то удаление.изменение записей могут производить капитан, создатель и тимлид"""
+    то удаление/изменение записей могут производить капитан, создатель и тимлид"""
 
     if not current_user.is_authenticated:
         flash("Ошибка доступа! Пожалуйста, авторизуйтесь, чтобы добавлять работы")
@@ -186,6 +185,95 @@ def deljob(job_id):
 
     flash("Запись успешно удалена")
     return redirect("/")
+
+
+@app.route('/departments')
+def deps_list():
+    ses = db_session.create_session()
+    return render_template('departments_list.html', deps=ses.query(Department), current_user=current_user)
+
+
+@app.route('/editdep/<dep_id>', methods=['GET', 'POST'])
+def editdep(dep_id):
+    if not current_user.is_authenticated:
+        flash("Ошибка доступа! Пожалуйста, авторизуйтесь, чтобы изменять департаменты")
+        return redirect("/")
+
+    ses = db_session.create_session()
+    dep = ses.query(Department).filter(Department.id == dep_id).first()
+    if current_user.id not in (dep.creator, CAPTAIN_ID, dep.chief):
+        flash("Ошибка доступа! Вы не можете изменять информацию об этом департаменте")
+        return redirect("/")
+
+    form = Adding_dep(
+        title=dep.title,
+        chief=dep.chief,
+        job=dep.job,
+        members=dep.members,
+        email=dep.email
+    )
+
+    if form.validate_on_submit():
+        dep.title = form.title.data
+        dep.chief = form.chief.data
+        dep.job = form.job.data
+        dep.members = form.members.data
+        dep.email = form.email.data
+
+        ses.add(dep)
+        ses.commit()
+
+        flash("Сохранено")
+        return redirect("/departments")
+
+    return render_template('adding_dep.html', title='Изменение департамента', form=form, current_user=current_user)
+
+
+@app.route('/adddep', methods=['GET', 'POST'])
+def adddep():
+    if not current_user.is_authenticated:
+        flash("Ошибка доступа! Пожалуйста, авторизуйтесь, чтобы добавлять департаменты")
+        return redirect("/")
+
+    form = Adding_dep()
+
+    if form.validate_on_submit():
+        ses = db_session.create_session()
+        dep = Department(
+            title=form.title.data,
+            creator=current_user.id,
+            chief=form.chief.data,
+            job=form.job.data,
+            members=form.members.data,
+            email=form.email.data
+        )
+
+        ses.add(dep)
+        ses.commit()
+
+        flash("Сохранено")
+        return redirect("/departments")
+
+    return render_template('adding_dep.html', title='Добавление департамента', form=form, current_user=current_user)
+
+
+@app.route('/deldep/<dep_id>', methods=['GET', 'POST'])
+def deldep(dep_id):
+    if not current_user.is_authenticated:
+        flash("Ошибка доступа! Пожалуйста, авторизуйтесь, чтобы удалять департаменты")
+        return redirect("/")
+
+    ses = db_session.create_session()
+    dep = ses.query(Department).filter(Department.id == dep_id).first()
+    if current_user.id not in (dep.creator, CAPTAIN_ID, dep.chief):
+        flash("Ошибка доступа! Вы не можете изменять информацию об этом департаменте")
+        return redirect("/")
+
+    ses.delete(dep)
+    ses.commit()
+
+    flash("Сохранено")
+    return redirect("/departments")
 
 
 if __name__ == '__main__':

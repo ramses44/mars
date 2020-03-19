@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<p>
+    <a class="h1">Список департаментов</a>
+    {% if current_user.is_authenticated %}
+        <a class="btn btn-light" href="/adddep">+</a>
+    {% endif %}
+    <a class="btn btn-light" href="/works_journal">Журнал работ</a>
+</p>
+
+{% for dep in deps %}
+    <p>
+        <a class="h2">Запись #{{loop.index}}</a>
+        {% if current_user.is_authenticated %}
+            <a class="btn btn-light" href="/editdep/{{dep.id}}">Редактировать</a>
+            <a class="btn btn-light" href="/deldep/{{dep.id}}">Удалить</a>
+        {% endif %}
+    </p>
+
+    <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Название</th>
+        <th scope="col">Глава</th>
+        <th scope="col">Вид работы</th>
+        <th scope="col">Участники</th>
+        <th scope="col">E-mail</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="table-active">
+        <th scope="row">{{dep.title}}</th>
+          <td>{{dep.chief_.surname}} {{dep.chief_.name}}</td>
+          <td>{{dep.job_.job}}</td>
+          <td>{{dep.members}}</td>
+          <td>{{dep.email}}</td>
+      </tr>
+    </tbody>
+  </table>
+{% endfor %}
+
+{% endblock %}

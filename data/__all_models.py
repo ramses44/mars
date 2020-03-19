@@ -1,5 +1,6 @@
-from . import users
+from .users import User
 from .jobs import Jobs
+from .departments import Department
 from wtforms import *
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField
@@ -36,3 +37,11 @@ class Adding_job(FlaskForm):
     is_finished = BooleanField("Завершена ли работа")
     add = SubmitField("Сохранить")
 
+
+class Adding_dep(FlaskForm):
+    title = StringField("Название", validators=[DataRequired()])
+    chief = IntegerField("ID главы", validators=[DataRequired()])
+    job = IntegerField("ID работы", validators=[DataRequired()])
+    members = StringField("ID участников")
+    email = StringField("E-mail")
+    save = SubmitField("Сохранить")
