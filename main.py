@@ -167,6 +167,24 @@ def editjob(job_id):
     return render_template('adding_job.html', title='Изменение работы', form=form, current_user=current_user)
 
 
+@app.route('/deljob/<job_id>', methods=['GET', "POST"])
+def deljob(job_id):
+    if not current_user.is_authenticated:
+        flash("Ошибка доступа! Пожалуйста, авторизуйтесь, чтобы добавлять работы")
+        return redirect("/")
+
+    ses = db_session.create_session()
+    job = ses.query(Jobs).filter(Jobs.id == job_id).first()
+    if current_user.id not in (job.creator, CAPTAIN_ID):
+        flash("Ошибка доступа! Вы не можете изменять информацию об этой работе")
+        return redirect("/")
+    ses.delete(job)
+    ses.commit()
+
+    flash("Запись успешно удалена")
+    return redirect("/")
+
+
 if __name__ == '__main__':
     db_session.global_init("db/mars.sqlite")
     app.run(port=8080, host='127.0.0.1')
