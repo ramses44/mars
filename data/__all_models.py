@@ -1,10 +1,20 @@
-from .users import User
-from .jobs import Jobs
-from .departments import Department
 from wtforms import *
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField
 from wtforms.validators import DataRequired
+import sqlalchemy
+from .db_session import SqlAlchemyBase
+
+association_table = sqlalchemy.Table('association', SqlAlchemyBase.metadata,
+    sqlalchemy.Column('job', sqlalchemy.Integer,
+                      sqlalchemy.ForeignKey('jobs.id')),
+    sqlalchemy.Column('category', sqlalchemy.Integer,
+                      sqlalchemy.ForeignKey('categories.id')))
+
+from .users import User
+from .jobs import Jobs
+from .departments import Department
+from .categories import Category
 
 
 class LoginForm(FlaskForm):
@@ -34,6 +44,7 @@ class Adding_job(FlaskForm):
     collaborators = StringField("ID работников")
     st_date = StringField("Дата начала работы")
     end_date = StringField("Дата окончания работы")
+    category = IntegerField("Категория")
     is_finished = BooleanField("Завершена ли работа")
     add = SubmitField("Сохранить")
 

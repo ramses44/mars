@@ -1,3 +1,7 @@
+"""Капитанские данные: caprain:qwerty
+Все изменения производились от имени пользователя admin:admin"""
+
+
 from flask import Flask, request, render_template, redirect, flash
 from data import db_session
 from data.__all_models import *
@@ -119,6 +123,7 @@ def addjob():
             end_date=datetime.strptime(form.end_date.data, "%Y-%m-%dT%H:%M") if form.end_date.data else None,
             is_finished=form.is_finished.data
         )
+        job.category.append(ses.query(Category).filter(Category.id == form.category.data).first())
         ses.add(job)
         ses.commit()
 
@@ -144,6 +149,7 @@ def editjob(job_id):
         tealead=job.team_leader,
         work_size=job.work_size,
         collaborators=job.collaborators,
+        category=job.get_category(),
         is_finished=job.is_finished
     )
 
@@ -155,6 +161,8 @@ def editjob(job_id):
         job.collaborators = form.collaborators.data
         job.start_date = datetime.strptime(form.st_date.data, "%Y-%m-%dT%H:%M") if form.st_date.data else job.start_date
         job.end_date = datetime.strptime(form.end_date.data, "%Y-%m-%dT%H:%M") if form.end_date.data else job.end_date
+        job.category.remove(job.category[-1])
+        job.category.append(ses.query(Category).filter(Category.id == form.category.data).first())
         job.is_finished = form.is_finished.data
 
         ses.add(job)
@@ -168,8 +176,6 @@ def editjob(job_id):
 
 @app.route('/deljob/<job_id>', methods=['GET', "POST"])
 def deljob(job_id):
-    """Т.к. условия задач сформулированы не совсем понятно,
-    то удаление/изменение записей могут производить капитан, создатель и тимлид"""
 
     if not current_user.is_authenticated:
         flash("Ошибка доступа! Пожалуйста, авторизуйтесь, чтобы добавлять работы")
@@ -180,6 +186,9 @@ def deljob(job_id):
     if current_user.id not in (job.creator, CAPTAIN_ID, job.team_leader):
         flash("Ошибка доступа! Вы не можете изменять информацию об этой работе")
         return redirect("/")
+
+    job.category = []
+    ses.commit()
     ses.delete(job)
     ses.commit()
 
@@ -278,4 +287,4 @@ def deldep(dep_id):
 
 if __name__ == '__main__':
     db_session.global_init("db/mars.sqlite")
-    app.run(port=8080, host='127.0.0.1')
+    app.run(port=8080, host='127.0.0.1', debug=True)

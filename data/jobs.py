@@ -18,7 +18,13 @@ class Jobs(SqlAlchemyBase):
     collaborators = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     start_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     end_date = sqlalchemy.Column(sqlalchemy.DateTime, nullable=True)
+    # category = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("categories.id"))
+    category = orm.relation('Category', secondary='association', backref='jobs', lazy='dynamic')
     is_finished = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
 
     def __repr__(self):
         return f"<Job> {self.job}"
+
+    def get_category(self):
+        return self.category[-1].id
+

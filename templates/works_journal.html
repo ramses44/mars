@@ -25,6 +25,7 @@
         <th scope="col">Тимлид</th>
         <th scope="col">Время работы</th>
         <th scope="col">ID рабочих</th>
+        <th scope="col">Категория</th>
         <th scope="col">Завершена ли</th>
       </tr>
     </thead>
@@ -34,6 +35,7 @@
           <td>{{work.teamlead.surname}} {{work.teamlead.name}}</td>
           <td>{{work.work_size}} hours</td>
           <td>{{work.collaborators}}</td>
+          <td>{{work.get_category()}}</td>
           {% if work.is_finished %}
             <td>Да</td>
           {% else %}
