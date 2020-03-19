@@ -136,7 +136,7 @@ def editjob(job_id):
 
     ses = db_session.create_session()
     job = ses.query(Jobs).filter(Jobs.id == job_id).first()
-    if current_user.id not in (job.creator, CAPTAIN_ID):
+    if current_user.id not in (job.creator, CAPTAIN_ID, job.team_leader):
         flash("Ошибка доступа! Вы не можете изменять информацию об этой работе")
         return redirect("/")
 
@@ -169,13 +169,16 @@ def editjob(job_id):
 
 @app.route('/deljob/<job_id>', methods=['GET', "POST"])
 def deljob(job_id):
+    """Т.к. условия задач сформулированы не совсем понятно,
+    то удаление.изменение записей могут производить капитан, создатель и тимлид"""
+
     if not current_user.is_authenticated:
         flash("Ошибка доступа! Пожалуйста, авторизуйтесь, чтобы добавлять работы")
         return redirect("/")
 
     ses = db_session.create_session()
     job = ses.query(Jobs).filter(Jobs.id == job_id).first()
-    if current_user.id not in (job.creator, CAPTAIN_ID):
+    if current_user.id not in (job.creator, CAPTAIN_ID, job.team_leader):
         flash("Ошибка доступа! Вы не можете изменять информацию об этой работе")
         return redirect("/")
     ses.delete(job)
