@@ -11,8 +11,10 @@
 {% for work in works %}
     <p>
         <a class="h2">Запись #{{loop.index}}</a>
-        <a class="btn btn-light" href="/editjob/{{loop.index}}">Редактировать</a>
-        <a class="btn btn-light" href="/deljob/{{loop.index}}">Удалить</a>
+        {% if current_user.is_authenticated %}
+            <a class="btn btn-light" href="/editjob/{{loop.index}}">Редактировать</a>
+            <a class="btn btn-light" href="/deljob/{{loop.index}}">Удалить</a>
+        {% endif %}
     </p>
 
     <table class="table">
