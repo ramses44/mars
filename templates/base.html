@@ -18,8 +18,10 @@
         <a class="navbar-brand" href="#">Миссия колонизации Марса</a>
         {% if current_user.is_authenticated %}
             <p>
-                <a class="navbar-brand" href="#">{{ current_user.name }} {{ current_user.surname }}</a>
+                <a class="navbar-brand" href="/logout">{{ current_user.name }} {{ current_user.surname }}</a>
+                <!--
                 <a class="btn btn-danger" href="/logout">Выйти</a>
+                -->
             </p>
         {% else %}
             <p>

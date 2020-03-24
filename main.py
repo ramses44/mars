@@ -2,11 +2,13 @@
 Все изменения производились от имени пользователя admin:admin"""
 
 
-from flask import Flask, request, render_template, redirect, flash
+from flask import Flask, request, render_template, redirect, flash, jsonify
 from data import db_session
 from data.__all_models import *
 from datetime import datetime
 from flask_login import login_user, logout_user, current_user, login_required, LoginManager
+import mars_api
+from flask import make_response
 
 CAPTAIN_ID = 1
 
@@ -20,6 +22,11 @@ login_manager.init_app(app)
 def load_user(user_id):
     session = db_session.create_session()
     return session.query(User).get(user_id)
+
+
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not found'}), 404)
 
 
 def add_user(login, pwd, name, sname, age, pos, spec, addr, **kwargs):
@@ -104,11 +111,8 @@ def success():
 
 
 @app.route('/addjob', methods=['GET', 'POST'])
+@login_required
 def addjob():
-    if not current_user.is_authenticated:
-        flash("Ошибка доступа! Пожалуйста, авторизуйтесь, чтобы добавлять работы")
-        return redirect("/")
-
     form = Adding_job()
 
     if form.validate_on_submit():
@@ -133,10 +137,8 @@ def addjob():
 
 
 @app.route('/editjob/<job_id>', methods=['GET', 'POST'])
+@login_required
 def editjob(job_id):
-    if not current_user.is_authenticated:
-        flash("Ошибка доступа! Пожалуйста, авторизуйтесь, чтобы добавлять работы")
-        return redirect("/")
 
     ses = db_session.create_session()
     job = ses.query(Jobs).filter(Jobs.id == job_id).first()
@@ -175,11 +177,8 @@ def editjob(job_id):
 
 
 @app.route('/deljob/<job_id>', methods=['GET', "POST"])
+@login_required
 def deljob(job_id):
-
-    if not current_user.is_authenticated:
-        flash("Ошибка доступа! Пожалуйста, авторизуйтесь, чтобы добавлять работы")
-        return redirect("/")
 
     ses = db_session.create_session()
     job = ses.query(Jobs).filter(Jobs.id == job_id).first()
@@ -203,11 +202,8 @@ def deps_list():
 
 
 @app.route('/editdep/<dep_id>', methods=['GET', 'POST'])
+@login_required
 def editdep(dep_id):
-    if not current_user.is_authenticated:
-        flash("Ошибка доступа! Пожалуйста, авторизуйтесь, чтобы изменять департаменты")
-        return redirect("/")
-
     ses = db_session.create_session()
     dep = ses.query(Department).filter(Department.id == dep_id).first()
     if current_user.id not in (dep.creator, CAPTAIN_ID, dep.chief):
@@ -239,11 +235,8 @@ def editdep(dep_id):
 
 
 @app.route('/adddep', methods=['GET', 'POST'])
+@login_required
 def adddep():
-    if not current_user.is_authenticated:
-        flash("Ошибка доступа! Пожалуйста, авторизуйтесь, чтобы добавлять департаменты")
-        return redirect("/")
-
     form = Adding_dep()
 
     if form.validate_on_submit():
@@ -267,11 +260,8 @@ def adddep():
 
 
 @app.route('/deldep/<dep_id>', methods=['GET', 'POST'])
+@login_required
 def deldep(dep_id):
-    if not current_user.is_authenticated:
-        flash("Ошибка доступа! Пожалуйста, авторизуйтесь, чтобы удалять департаменты")
-        return redirect("/")
-
     ses = db_session.create_session()
     dep = ses.query(Department).filter(Department.id == dep_id).first()
     if current_user.id not in (dep.creator, CAPTAIN_ID, dep.chief):
@@ -287,4 +277,5 @@ def deldep(dep_id):
 
 if __name__ == '__main__':
     db_session.global_init("db/mars.sqlite")
-    app.run(port=8080, host='127.0.0.1', debug=True)
+    app.register_blueprint(mars_api.blueprint)
+    app.run(port=8080, host='127.0.0.1', debug=False)
