@@ -1,0 +1,20 @@
+from flask_restful import reqparse
+
+post_parser = reqparse.RequestParser()
+post_parser.add_argument('login', required=True)
+post_parser.add_argument('password', required=True)
+post_parser.add_argument('surname', required=True)
+post_parser.add_argument('name', required=True)
+post_parser.add_argument('age', required=False, type=int)
+post_parser.add_argument('position', required=False)
+post_parser.add_argument('speciality', required=False)
+post_parser.add_argument('address', required=False)
+
+put_parser = reqparse.RequestParser()
+put_parser.add_argument('login', required=False)
+put_parser.add_argument('surname', required=False)
+put_parser.add_argument('name', required=False)
+put_parser.add_argument('age', required=False, type=int)
+put_parser.add_argument('position', required=False)
+put_parser.add_argument('speciality', required=False)
+put_parser.add_argument('address', required=False)

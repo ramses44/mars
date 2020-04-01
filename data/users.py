@@ -12,10 +12,10 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
     login = sqlalchemy.Column(sqlalchemy.String,
-                              index=True, unique=True, nullable=True)
+                              index=True, unique=True, nullable=False)
     password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    surname = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    surname = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     age = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     position = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     speciality = sqlalchemy.Column(sqlalchemy.String, nullable=True)

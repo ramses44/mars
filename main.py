@@ -6,7 +6,7 @@ from flask_login import login_user, logout_user, current_user, login_required, L
 import mars_api
 from flask import make_response
 from flask_restful import Api
-from data import jobs_resources
+from data import jobs_resources, users_resource
 
 CAPTAIN_ID = 1
 
@@ -18,6 +18,8 @@ login_manager.init_app(app)
 
 api.add_resource(jobs_resources.JobsListResource, '/api/v2/jobs')
 api.add_resource(jobs_resources.JobResource, '/api/v2/jobs/<int:job_id>')
+api.add_resource(users_resource.UsersListResource, '/api/v2/users')
+api.add_resource(users_resource.UserResource, '/api/v2/users/<int:uid>')
 
 
 @login_manager.user_loader
