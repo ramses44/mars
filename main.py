@@ -1,7 +1,3 @@
-"""Капитанские данные: caprain:qwerty
-Все изменения производились от имени пользователя admin:admin"""
-
-
 from flask import Flask, request, render_template, redirect, flash, jsonify
 from data import db_session
 from data.__all_models import *
@@ -9,13 +5,19 @@ from datetime import datetime
 from flask_login import login_user, logout_user, current_user, login_required, LoginManager
 import mars_api
 from flask import make_response
+from flask_restful import Api
+from data import jobs_resources
 
 CAPTAIN_ID = 1
 
 app = Flask(__name__)
+api = Api(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+api.add_resource(jobs_resources.JobsListResource, '/api/v2/jobs')
+api.add_resource(jobs_resources.JobResource, '/api/v2/jobs/<int:job_id>')
 
 
 @login_manager.user_loader
